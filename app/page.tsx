@@ -1,8 +1,8 @@
 'use client'
 import { useEffect, useRef, useState } from 'react';
 import confetti from 'canvas-confetti';
+import { ArrowLeftIcon } from '@radix-ui/react-icons';
 
-// Candidate interface
 interface Candidate {
   sNo: number;
   district: string;
@@ -131,7 +131,7 @@ export default function EVMApp() {
         setLoading(true);
         const response = await fetch('/api/candidates');
         const result = await response.json();
-        
+
         if (result.success) {
           setCandidates(result.data);
           setFilteredCandidates(result.data);
@@ -352,7 +352,7 @@ export default function EVMApp() {
             <label className="block text-sm font-semibold text-blue-900 mb-2">
               Assembly Constituency:
             </label>
-            
+
             {/* Search Bar */}
             {showACDropdown && !hasVoted && (
               <div className="mb-3">
@@ -361,11 +361,11 @@ export default function EVMApp() {
                   placeholder="Search by AC Name, Candidate, or District..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder:text-gray-500"
                 />
               </div>
             )}
-            
+
             <button
               onClick={() => !hasVoted && setShowACDropdown(!showACDropdown)}
               disabled={hasVoted || loading}
@@ -423,15 +423,14 @@ export default function EVMApp() {
 
                 {/* Green LED */}
                 <div className="flex justify-center mb-4">
-                  <div className={`w-4 h-4 rounded-full shadow-lg transition-all duration-300 ${
-                    ledOn 
-                      ? 'bg-green-400 shadow-green-400/50 shadow-lg animate-pulse' 
+                  <div className={`w-4 h-4 rounded-full shadow-lg transition-all duration-300 ${ledOn
+                      ? 'bg-green-400 shadow-green-400/50 shadow-lg animate-pulse'
                       : 'bg-green-600'
-                  }`}></div>
+                    }`}></div>
                 </div>
 
-               {/* EVM Content */}
-               <div className="bg-white rounded-lg shadow-inner">
+                {/* EVM Content */}
+                <div className="bg-white rounded-lg shadow-inner">
                   {/* Unified Ballot Section with Integrated Buttons */}
                   <div className="flex flex-col">
                     {/* Create 13 rows, with selected candidate at position 3 */}
@@ -444,18 +443,18 @@ export default function EVMApp() {
                         <div key={rowNumber} className="flex border-b border-gray-300">
                           {/* Left Side - Candidate Info Section */}
                           <div className={`flex items-center px-3 py-3 flex-1 transition-all duration-200 ${isSelectedCandidate
-                              ? isSelected
-                                ? 'bg-blue-100 shadow-md'
-                                : 'bg-yellow-50'
-                              : 'bg-white'
+                            ? isSelected
+                              ? 'bg-blue-100 shadow-md'
+                              : 'bg-yellow-50'
+                            : 'bg-white'
                             }`}>
                             {/* Serial Number */}
                             <div className="w-8 text-center shrink-0">
                               <span className={`text-base font-bold ${isSelectedCandidate
-                                  ? isSelected
-                                    ? 'text-blue-800'
-                                    : 'text-yellow-800'
-                                  : 'text-black'
+                                ? isSelected
+                                  ? 'text-blue-800'
+                                  : 'text-yellow-800'
+                                : 'text-black'
                                 }`}>{rowNumber}.</span>
                             </div>
 
@@ -496,33 +495,37 @@ export default function EVMApp() {
                           </div>
 
                           {/* Right Side - Control Button (Fixed Width) */}
+
                           <button
                             onClick={() => isSelectedCandidate && handlePartySelect(parties[0])}
                             disabled={hasVoted || !isSelectedCandidate}
-                            className={`w-18 md:w-24 flex items-center justify-center transition-all duration-200 ease-in-out shrink-0 ${isSelected
-                                ? 'bg-blue-300 scale-95 shadow-inner'
-                                : isSelectedCandidate
-                                  ? 'bg-blue-700 hover:bg-blue-600 active:scale-95'
-                                  : 'bg-gray-400 cursor-not-allowed'
+                            className={`w-22 md:w-28 flex items-center justify-center transition-all duration-200 ease-in-out shrink-0 ${isSelected
+                              ? 'bg-blue-300 scale-95 shadow-inner'
+                              : isSelectedCandidate
+                                ? 'bg-blue-700 hover:bg-blue-600 active:scale-95'
+                                : 'bg-gray-400 cursor-not-allowed'
                               } ${hasVoted ? 'opacity-50' : ''}`}
                           >
+
+                            <ArrowLeftIcon className={`w-7 stroke-3 h-7 mr-1 md:mr-2  ${isSelected ? 'text-blue-800' : 'text-white'}`} />
+
                             <div className={`w-14 h-8 rounded-full flex items-center justify-center shadow-md transition-all duration-200 ${isSelected
-                                ? 'bg-blue-800 scale-95'
-                                : isSelectedCandidate
-                                  ? 'bg-blue-800'
-                                  : 'bg-gray-500'
+                              ? 'bg-blue-800 scale-95'
+                              : isSelectedCandidate
+                                ? 'bg-blue-800'
+                                : 'bg-gray-500'
                               }`}>
                               <div className={`w-10 h-5 rounded-full flex items-center justify-center ${isSelected
-                                  ? 'bg-blue-600 scale-95'
-                                  : isSelectedCandidate
-                                    ? 'bg-blue-600'
-                                    : 'bg-gray-400'
+                                ? 'bg-blue-600 scale-95'
+                                : isSelectedCandidate
+                                  ? 'bg-blue-600'
+                                  : 'bg-gray-400'
                                 }`}>
                                 <div className={`w-6 h-3 rounded-full ${isSelected
-                                    ? 'bg-blue-500 scale-95'
-                                    : isSelectedCandidate
-                                      ? 'bg-blue-500'
-                                      : 'bg-gray-300'
+                                  ? 'bg-blue-500 scale-95'
+                                  : isSelectedCandidate
+                                    ? 'bg-blue-500'
+                                    : 'bg-gray-300'
                                   }`}></div>
                               </div>
                             </div>
