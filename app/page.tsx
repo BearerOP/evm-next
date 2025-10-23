@@ -304,7 +304,7 @@ export default function EVMApp() {
               className="w-full flex items-center justify-between bg-gray-50 border border-gray-300 rounded-lg px-3 py-3 text-left disabled:opacity-50"
             >
               <span className={selectedAC ? 'text-gray-900' : 'text-gray-400'}>
-                {loading ? 'Loading candidates...' : selectedAC || 'Select your AC'}
+                {loading ? 'उम्मीदवार लोड हो रहे हैं...' : selectedAC || 'अपनी विधानसभा चुनें'}
               </span>
               <span className={`text-xs text-gray-600 transition-transform ${showACDropdown ? 'rotate-180' : ''}`}>
                 ▼
@@ -490,7 +490,7 @@ export default function EVMApp() {
             <div className="text-center py-16">
               <div className="text-6xl mb-4">🗳️</div>
               <p className="text-gray-500 px-10">
-                Please select your Assembly Constituency to begin voting
+                मतदान शुरू करने के लिए कृपया अपनी विधानसभा चुनें
               </p>
             </div>
           )}
