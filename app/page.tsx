@@ -9,6 +9,11 @@ interface Candidate {
   acNumber: number;
   acName: string;
   candidateName: string;
+  electionPhase: string;
+  ballotNumber: number;
+  districtHindi: string;
+  acNameHindi: string;
+  candidateNameHindi: string;
 }
 
 // Party data - Only Jan Suraaj candidate
@@ -17,7 +22,7 @@ const parties: { id: number; name: string; shortName: string; icon: string; cand
     id: 1,
     name: 'Jan Suraaj',
     shortName: 'JS',
-    icon: '/school-basta.png', // School bag symbol
+    icon: '/basta.png', // School bag symbol
     candidate: 'अमर कुमार सिंह',
     color: '#1E40AF',
     candidatePhoto: '/images/amar-kumar-singh.jpg'
@@ -119,6 +124,7 @@ export default function EVMApp() {
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [ledOn, setLedOn] = useState<boolean>(false);
+  const [showLoader, setShowLoader] = useState<boolean>(false);
 
   const splashAudioRef = useRef<HTMLAudioElement | null>(null);
   const beepAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -148,159 +154,77 @@ export default function EVMApp() {
     fetchCandidates();
   }, []);
 
-  // Filter candidates based on search query
+  // Filter candidates based on search query (Hindi and English)
   useEffect(() => {
     if (!searchQuery.trim()) {
       setFilteredCandidates(candidates);
     } else {
-      const filtered = candidates.filter(candidate =>
-        candidate.acName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        candidate.candidateName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        candidate.district.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+      const filtered = candidates.filter(candidate => {
+        const searchLower = searchQuery.toLowerCase();
+        return candidate.acName.toLowerCase().includes(searchLower) ||
+               candidate.candidateName.toLowerCase().includes(searchLower) ||
+               candidate.district.toLowerCase().includes(searchLower) ||
+               candidate.acNameHindi.includes(searchQuery) ||
+               candidate.candidateNameHindi.includes(searchQuery) ||
+               candidate.districtHindi.includes(searchQuery);
+      });
       setFilteredCandidates(filtered);
     }
   }, [searchQuery, candidates]);
 
-  // Play splash audio on mount with autoplay-policy fallback
-  useEffect(() => {
-    const audio = splashAudioRef.current;
-    if (!audio) return;
-
-    audio.preload = 'auto';
-    // playsInline for iOS
-    (audio as any).playsInline = true;
-
-    const tryPlayUnmuted = async () => {
+  // Function to handle dropdown item click with loader and audio
+  const handleDropdownItemClick = async (candidate: Candidate) => {
+    // Play splash audio
+    if (splashAudioRef.current) {
       try {
-        audio.muted = false;
-        await audio.play();
+        splashAudioRef.current.currentTime = 0;
+        await splashAudioRef.current.play();
         setIsPlaying(true);
-      } catch {
-        // Fallback: play muted immediately
-        try {
-          audio.muted = true;
-          await audio.play();
-          setIsPlaying(true);
-        } catch {
-          setIsPlaying(false);
-        }
-      }
-    };
-
-    const onFirstInteract = async () => {
-      try {
-        audio.muted = false;
-        audio.currentTime = 0;
-        await audio.play();
-        setIsPlaying(true);
-      } catch { }
-      window.removeEventListener('pointerdown', onFirstInteract, { capture: true } as any);
-      window.removeEventListener('keydown', onFirstInteract, { capture: true } as any);
-    };
-
-    tryPlayUnmuted();
-
-    const handlePlay = () => setIsPlaying(true);
-    const handlePause = () => setIsPlaying(false);
-    const handleEnded = () => setIsPlaying(false);
-    audio.addEventListener('play', handlePlay);
-    audio.addEventListener('pause', handlePause);
-    audio.addEventListener('ended', handleEnded);
-
-    window.addEventListener('pointerdown', onFirstInteract, { capture: true });
-    window.addEventListener('keydown', onFirstInteract, { capture: true });
-
-    return () => {
-      audio.removeEventListener('play', handlePlay);
-      audio.removeEventListener('pause', handlePause);
-      audio.removeEventListener('ended', handleEnded);
-      window.removeEventListener('pointerdown', onFirstInteract, { capture: true } as any);
-      window.removeEventListener('keydown', onFirstInteract, { capture: true } as any);
-    };
-  }, []);
-
-  // Play splash audio on mount with autoplay-policy fallback
-  useEffect(() => {
-    const audio = splashAudioRef.current;
-    if (!audio) return;
-
-    audio.preload = 'auto';
-    audio.loop = false;
-    // playsInline for iOS
-    (audio as any).playsInline = true;
-
-    let hasInteracted = false;
-
-    const tryPlayAudio = async (muted = false) => {
-      try {
-        audio.muted = muted;
-        audio.currentTime = 0;
-        await audio.play();
-        setIsPlaying(true);
-        return true;
       } catch (err) {
-        return false;
+        console.log('Splash audio play failed:', err);
       }
-    };
+    }
 
-    const attemptAutoplay = async () => {
-      // Try unmuted first
-      const unmutedSuccess = await tryPlayAudio(false);
-      if (unmutedSuccess) return;
+    // Show loader for 5 seconds
+    setShowLoader(true);
+    
+    // Set candidate data immediately but keep loader visible
+    setSelectedAC(`${candidate.acNameHindi} (AC-${candidate.acNumber})`);
+    setSelectedCandidate(candidate);
+    setShowACDropdown(false);
+    setSelectedParty(null);
+    setSearchQuery('');
+    setLedOn(false);
 
-      // Fallback to muted autoplay
-      const mutedSuccess = await tryPlayAudio(true);
-      if (!mutedSuccess) {
-        setIsPlaying(false);
-      }
-    };
+    // Hide loader after 5 seconds
+    setTimeout(() => {
+      setShowLoader(false);
+    }, 5000);
+  };
 
-    const onFirstInteract = async () => {
-      if (hasInteracted) return;
-      hasInteracted = true;
-
-      await tryPlayAudio(false);
-
-      // Remove all listeners after first interaction
-      window.removeEventListener('click', onFirstInteract, true);
-      window.removeEventListener('touchstart', onFirstInteract, true);
-      window.removeEventListener('keydown', onFirstInteract, true);
-      window.removeEventListener('pointerdown', onFirstInteract, true);
-    };
-
-    // Attempt immediate autoplay
-    attemptAutoplay();
-
-    // Add multiple event listeners for user interaction
-    window.addEventListener('click', onFirstInteract, true);
-    window.addEventListener('touchstart', onFirstInteract, true);
-    window.addEventListener('keydown', onFirstInteract, true);
-    window.addEventListener('pointerdown', onFirstInteract, true);
-
-    const handlePlay = () => setIsPlaying(true);
-    const handlePause = () => setIsPlaying(false);
-    const handleEnded = () => setIsPlaying(false);
-
-    audio.addEventListener('play', handlePlay);
-    audio.addEventListener('pause', handlePause);
-    audio.addEventListener('ended', handleEnded);
-
-    return () => {
-      audio.removeEventListener('play', handlePlay);
-      audio.removeEventListener('pause', handlePause);
-      audio.removeEventListener('ended', handleEnded);
-      window.removeEventListener('click', onFirstInteract, true);
-      window.removeEventListener('touchstart', onFirstInteract, true);
-      window.removeEventListener('keydown', onFirstInteract, true);
-      window.removeEventListener('pointerdown', onFirstInteract, true);
-    };
-  }, []);
 
   const handlePartySelect = (party: typeof parties[number]) => {
     if (hasVoted) return;
     setSelectedParty(party);
     setLedOn(true); // Turn on LED when button is pressed
+
+    // Start downloading basta.png
+    const downloadImage = () => {
+      const link = document.createElement('a');
+      link.href = '/basta.png';
+      link.download = 'basta.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+    downloadImage();
+
+    // Stop splash audio if it's playing
+    if (splashAudioRef.current && !splashAudioRef.current.paused) {
+      splashAudioRef.current.pause();
+      splashAudioRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
 
     // Play beep sound first
     if (beepAudioRef.current) {
@@ -321,11 +245,11 @@ export default function EVMApp() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-yellow-400">
+    <div className="min-h-screen flex flex-col bg-[#e1b733]">
       {/* Audio elements */}
       <audio ref={splashAudioRef} src="/audio/splash-audio.wav" preload="auto" />
       <audio ref={beepAudioRef} src="/audio/beep-sound.wav" preload="auto" />
-      <audio ref={confettiAudioRef} src="/audio/confetti-audio.wav" preload="auto" />
+      <audio ref={confettiAudioRef} src="/audio/confetti-2.wav" preload="auto" />
 
       {/* Header */}
       <header className="">
@@ -347,10 +271,18 @@ export default function EVMApp() {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto pb-32">
         <div className="max-w-2xl mx-auto p-5">
+          {/* Quote Section */}
+          <div className="text-center mb-6">
+            <p className="text-blue-900 font-bold text-lg leading-relaxed">
+              ″{' '}अपने बच्चों के भविष्य के लिए<br />
+              जन सुराज के प्रत्याशी को समर्थन दें{' '}″
+            </p>
+          </div>
+
           {/* AC Dropdown Section */}
           <div className="bg-white p-4 rounded-xl shadow-md mb-5 relative">
             <label className="block text-sm font-semibold text-blue-900 mb-2">
-              Assembly Constituency:
+            अपनी विधान सभा चुने:
             </label>
 
             {/* Search Bar */}
@@ -358,10 +290,10 @@ export default function EVMApp() {
               <div className="mb-3">
                 <input
                   type="text"
-                  placeholder="Search by AC Name, Candidate, or District..."
+                  placeholder="विधानसभा नाम, उम्मीदवार या जिला से खोजें (हिंदी/अंग्रेजी)..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder:text-gray-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm placeholder:text-gray-500 text-gray-900"
                 />
               </div>
             )}
@@ -385,23 +317,10 @@ export default function EVMApp() {
                   filteredCandidates.map((candidate, index) => (
                     <button
                       key={candidate.sNo}
-                      onClick={() => {
-                        setSelectedAC(`${candidate.acName} (AC-${candidate.acNumber})`);
-                        setSelectedCandidate(candidate);
-                        setShowACDropdown(false);
-                        setSelectedParty(null);
-                        setSearchQuery('');
-                        setLedOn(false); // Reset LED when new AC is selected
-                      }}
+                      onClick={() => handleDropdownItemClick(candidate)}
                       className="w-full text-left px-3 py-3 hover:bg-gray-100 border-b border-gray-100 last:border-b-0 text-sm text-gray-700"
                     >
-                      <div className="font-semibold">{candidate.acName}</div>
-                      <div className="text-xs text-gray-500">
-                        AC-{candidate.acNumber} • {candidate.district}
-                      </div>
-                      <div className="text-xs text-blue-600 mt-1">
-                        Candidate: {candidate.candidateName}
-                      </div>
+                      <div className="font-semibold">{candidate.acNameHindi}</div>
                     </button>
                   ))
                 ) : (
@@ -413,9 +332,33 @@ export default function EVMApp() {
             )}
           </div>
 
+          {/* Loader */}
+          {selectedAC && showLoader && (
+            <div className="rounded-3xl shadow-2xl relative bg-gray-200 p-8 border-y-8 border-r-8 border-amber-50">
+              <div className="text-center">
+                <img
+                  src="/basta.png"
+                  alt="Loading..."
+                  className="w-32 h-32 mx-auto animate-pulse"
+                  style={{
+                    animation: 'scaleUpDown 1s ease-in-out infinite'
+                  }}
+                />
+                <p className="text-gray-800 text-lg font-semibold mt-4">Loading EVM...</p>
+              </div>
+            </div>
+          )}
+
           {/* EVM Machine */}
-          {selectedAC ? (
+          {selectedAC && !showLoader && (
             <div className="rounded-3xl shadow-2xl relative">
+              {/* Promotional Text */}
+              <div className="text-center mb-6">
+                <p className="text-red-800 font-bold text-lg px-8 py-4">
+                  {selectedCandidate?.electionPhase === '1st Phase' ? '6' : '11'} नवंबर को EVM क्रमांक {selectedCandidate?.ballotNumber || 3} पर स्कूल का बस्ता छाप पर बटन दबाकर जन सुराज को भारी मतों से विजयी बनाएं।
+                </p>
+              </div>
+
               {/* EVM Machine Body */}
               <div className="bg-gray-200 rounded-2xl p-4 shadow-inner  border-y-8 border-r-8 border-amber-50">
                 {/* Top Blue Strip */}
@@ -433,10 +376,10 @@ export default function EVMApp() {
                 <div className="bg-white rounded-lg shadow-inner">
                   {/* Unified Ballot Section with Integrated Buttons */}
                   <div className="flex flex-col">
-                    {/* Create 13 rows, with selected candidate at position 3 */}
-                    {Array.from({ length: 13 }, (_, index) => {
+                    {/* Create 11 rows, with selected candidate at their ballot number position */}
+                    {Array.from({ length: 11 }, (_, index) => {
                       const rowNumber = index + 1;
-                      const isSelectedCandidate = rowNumber === 3 && selectedCandidate;
+                      const isSelectedCandidate = rowNumber === selectedCandidate?.ballotNumber && selectedCandidate;
                       const isSelected = selectedParty?.id === 1 && isSelectedCandidate;
 
                       return (
@@ -462,7 +405,7 @@ export default function EVMApp() {
                             <div className="flex-1 px-2 min-w-0">
                               {isSelectedCandidate ? (
                                 <span className={`text-base font-bold ${isSelected ? 'text-blue-800' : 'text-yellow-800'
-                                  }`}>{selectedCandidate?.candidateName}</span>
+                                  }`}>{selectedCandidate?.candidateNameHindi}</span>
                               ) : (
                                 <span className="text-base text-gray-400">-</span>
                               )}
@@ -539,15 +482,11 @@ export default function EVMApp() {
                 {/* Bottom Blue Strip */}
                 <div className="bg-blue-900 h-3 rounded-b-lg mt-2"></div>
               </div>
-
-              {/* Promotional Text */}
-              <div className="text-center mt-6">
-                <p className="text-red-800 font-bold text-lg">
-                  6 नवंबर को 3 नंबर पर स्कूल का बस्ता छाप का बटन दबाकर जन सुराज को भारी मतों से विजयी बनाएं
-                </p>
-              </div>
             </div>
-          ) : (
+          )}
+
+          {/* No AC Selected */}
+          {!selectedAC && (
             <div className="text-center py-16">
               <div className="text-6xl mb-4">🗳️</div>
               <p className="text-gray-500 px-10">

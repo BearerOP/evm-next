@@ -13,6 +13,11 @@ interface Candidate {
   acNumber: number;
   acName: string;
   candidateName: string;
+  electionPhase: string;
+  ballotNumber: number;
+  districtHindi: string;
+  acNameHindi: string;
+  candidateNameHindi: string;
 }
 
 function parseCSV(csvContent: string): Candidate[] {
@@ -25,13 +30,23 @@ function parseCSV(csvContent: string): Candidate[] {
     if (!line) continue;
     
     const columns = line.split(',');
-    if (columns.length >= 5) {
+    if (columns.length >= 10) {
+      // Extract AC number from Assembly column (e.g., "29-Runnisaidpur" -> 29)
+      const assemblyColumn = columns[1] || '';
+      const acNumberMatch = assemblyColumn.match(/^(\d+)-/);
+      const acNumber = acNumberMatch ? parseInt(acNumberMatch[1]) : 0;
+      
       candidates.push({
-        sNo: parseInt(columns[0]) || 0,
-        district: columns[1] || '',
-        acNumber: parseInt(columns[2]) || 0,
-        acName: columns[3] || '',
-        candidateName: columns[4] || ''
+        sNo: i,
+        district: columns[0] || '',
+        acNumber: acNumber,
+        acName: assemblyColumn,
+        candidateName: columns[2] || '',
+        electionPhase: columns[3] || '',
+        ballotNumber: parseInt(columns[4]) || 0,
+        districtHindi: columns[6] || '',
+        acNameHindi: columns[7] || '',
+        candidateNameHindi: columns[8] || ''
       });
     }
   }
@@ -48,11 +63,15 @@ export async function GET(request: Request) {
     const now = Date.now();
     if (candidateCache && (now - cacheTimestamp) < CACHE_DURATION) {
       const filteredCandidates = search 
-        ? candidateCache.filter(candidate => 
-            candidate.acName.toLowerCase().includes(search.toLowerCase()) ||
-            candidate.candidateName.toLowerCase().includes(search.toLowerCase()) ||
-            candidate.district.toLowerCase().includes(search.toLowerCase())
-          )
+        ? candidateCache.filter(candidate => {
+            const searchLower = search.toLowerCase();
+            return candidate.acName.toLowerCase().includes(searchLower) ||
+                   candidate.candidateName.toLowerCase().includes(searchLower) ||
+                   candidate.district.toLowerCase().includes(searchLower) ||
+                   candidate.acNameHindi.includes(search) ||
+                   candidate.candidateNameHindi.includes(search) ||
+                   candidate.districtHindi.includes(search);
+          })
         : candidateCache;
       
       return NextResponse.json({
@@ -64,7 +83,7 @@ export async function GET(request: Request) {
     }
     
     // Read CSV file
-    const csvPath = path.join(process.cwd(), 'public', 'assets', 'CandidateList.csv');
+    const csvPath = path.join(process.cwd(), 'public', 'assets', 'CandidateNameData.csv');
     const csvContent = fs.readFileSync(csvPath, 'utf-8');
     
     // Parse CSV
@@ -74,13 +93,17 @@ export async function GET(request: Request) {
     candidateCache = candidates;
     cacheTimestamp = now;
     
-    // Filter by search if provided
+    // Filter by search if provided (search in both English and Hindi)
     const filteredCandidates = search 
-      ? candidates.filter(candidate => 
-          candidate.acName.toLowerCase().includes(search.toLowerCase()) ||
-          candidate.candidateName.toLowerCase().includes(search.toLowerCase()) ||
-          candidate.district.toLowerCase().includes(search.toLowerCase())
-        )
+      ? candidates.filter(candidate => {
+          const searchLower = search.toLowerCase();
+          return candidate.acName.toLowerCase().includes(searchLower) ||
+                 candidate.candidateName.toLowerCase().includes(searchLower) ||
+                 candidate.district.toLowerCase().includes(searchLower) ||
+                 candidate.acNameHindi.includes(search) ||
+                 candidate.candidateNameHindi.includes(search) ||
+                 candidate.districtHindi.includes(search);
+        })
       : candidates;
     
     return NextResponse.json({
