@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EVM Next.js Application
 
-## Getting Started
+A Next.js application for Electronic Voting Machine simulation with Hindi/English support.
 
-First, run the development server:
+## Docker Setup
 
+### Prerequisites
+- Docker
+- Docker Compose
+
+### Quick Start
+
+1. **Build and run with Docker Compose:**
+   ```bash
+   docker-compose up --build
+   ```
+
+2. **Access the application:**
+   - Open your browser and go to `http://localhost:3000`
+
+### Docker Commands
+
+**Build the Docker image:**
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+docker build -t evm-app .
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Run the container:**
+```bash
+docker run -p 3000:3000 evm-app
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Run in detached mode:**
+```bash
+docker-compose up -d --build
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Stop the application:**
+```bash
+docker-compose down
+```
 
-## Learn More
+**View logs:**
+```bash
+docker-compose logs -f evm-app
+```
 
-To learn more about Next.js, take a look at the following resources:
+### Development
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+For local development without Docker:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-## Deploy on Vercel
+2. **Run development server:**
+   ```bash
+   npm run dev
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. **Build for production:**
+   ```bash
+   npm run build
+   npm start
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Features
+
+- Hindi/English bilingual interface
+- Dynamic ballot numbers based on election phase
+- Audio feedback with splash and confetti sounds
+- School bag symbol download on vote
+- Responsive design with Tailwind CSS
+- CSV-based candidate data management
+
+### File Structure
+
+```
+├── app/
+│   ├── api/candidates/     # API routes
+│   ├── globals.css         # Global styles
+│   ├── layout.tsx          # Root layout
+│   └── page.tsx            # Main page
+├── public/
+│   ├── assets/            # CSV data files
+│   ├── audio/             # Audio files
+│   └── *.png              # Images
+├── Dockerfile
+├── docker-compose.yml
+└── next.config.ts
+```
+
+### Environment Variables
+
+The application runs with default settings. No environment variables are required for basic functionality.
+
+### Health Check
+
+The Docker container includes a health check that verifies the application is responding on port 3000.
