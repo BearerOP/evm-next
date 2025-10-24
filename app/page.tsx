@@ -22,7 +22,7 @@ const parties: { id: number; name: string; shortName: string; icon: string; cand
     id: 1,
     name: 'Jan Suraaj',
     shortName: 'JS',
-    icon: '/basta.png', // School bag symbol
+    icon: '/School-Bag.jpg', // School bag symbol
     candidate: 'अमर कुमार सिंह',
     color: '#1E40AF',
     candidatePhoto: '/images/amar-kumar-singh.jpg'
@@ -216,11 +216,11 @@ export default function EVMApp() {
     setSelectedParty(party);
     setLedOn(true); // Turn on LED when button is pressed
 
-    // Start downloading basta.png
+    // Start downloading School-Bag.jpg
     const downloadImage = () => {
       const link = document.createElement('a');
-      link.href = '/basta.png';
-      link.download = 'basta.png';
+      link.href = '/School-Bag.jpg';
+      link.download = 'School-Bag.jpg';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -340,7 +340,7 @@ export default function EVMApp() {
             // border-r-8 border-amber-50">
             //               <div className="text-center">
             //                 <img
-            //                   src="/basta.png"
+            //                   src="/School-Bag.jpg"
             //                   alt="Loading..."
             //                   className="w-32 h-32 mx-auto animate-pulse"
             //                   style={{
@@ -352,12 +352,12 @@ export default function EVMApp() {
             <div className="rounded-3xl shadow-2xl relative">
               {/* Initial Loading Screen */}
               {!showSkeletonEVM && (
-                <div className="bg-gray-200 p-8 border-y-8 border-r-8 border-amber-50 rounded-3xl">
+                <div className="bg-white p-8 border-y-8 border-r-8 border-amber-50 rounded-3xl">
                   <div className="text-center">
                     <img
-                      src="/basta.png"
+                      src="/School-Bag.jpg"
                       alt="Loading..."
-                      className="w-32 h-32 mx-auto animate-pulse"
+                      className="w-20 h-20 mx-auto animate-pulse"
                       style={{
                         animation: 'scaleUpDown 1s ease-in-out infinite'
                       }}
