@@ -169,7 +169,9 @@ export default function EVMApp() {
                candidate.candidateNameHindi.includes(searchQuery) ||
                candidate.districtHindi.includes(searchQuery);
       });
-      setFilteredCandidates(filtered);
+      // Ensure filtered results maintain sorted order by Assembly number
+      const sortedFiltered = filtered.sort((a, b) => a.acNumber - b.acNumber);
+      setFilteredCandidates(sortedFiltered);
     }
   }, [searchQuery, candidates]);
 

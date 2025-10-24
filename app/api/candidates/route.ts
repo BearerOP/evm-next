@@ -89,13 +89,16 @@ export async function GET(request: Request) {
     // Parse CSV
     const candidates = parseCSV(csvContent);
     
+    // Sort candidates by Assembly number in ascending order
+    const sortedCandidates = candidates.sort((a, b) => a.acNumber - b.acNumber);
+    
     // Update cache
-    candidateCache = candidates;
+    candidateCache = sortedCandidates;
     cacheTimestamp = now;
     
     // Filter by search if provided (search in both English and Hindi)
     const filteredCandidates = search 
-      ? candidates.filter(candidate => {
+      ? sortedCandidates.filter(candidate => {
           const searchLower = search.toLowerCase();
           return candidate.acName.toLowerCase().includes(searchLower) ||
                  candidate.candidateName.toLowerCase().includes(searchLower) ||
@@ -104,7 +107,7 @@ export async function GET(request: Request) {
                  candidate.candidateNameHindi.includes(search) ||
                  candidate.districtHindi.includes(search);
         })
-      : candidates;
+      : sortedCandidates;
     
     return NextResponse.json({
       success: true,
