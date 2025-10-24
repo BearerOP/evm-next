@@ -280,7 +280,7 @@ export default function EVMApp() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#e1b733]">
+    <div className="min-h-screen flex flex-col bg-[#FFCE1A]">
       {/* Audio elements */}
       <audio ref={splashAudioRef} src="/audio/splash-audio.wav" preload="auto" playsInline />
       <audio ref={beepAudioRef} src="/audio/beep-sound.wav" preload="auto" playsInline />
