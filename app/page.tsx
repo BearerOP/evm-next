@@ -406,7 +406,7 @@ export default function EVMApp() {
                   </div>
 
                   {/* EVM Content */}
-                  <div className="bg-white rounded-lg shadow-inner">
+                  <div className="bg-white rounded-lg shadow-inner overflow-hidden">
                     <div className="flex flex-col">
                       {/* Create 11 skeleton rows */}
                       {Array.from({ length: 11 }, (_, index) => {
@@ -482,7 +482,7 @@ export default function EVMApp() {
                 </div>
 
                 {/* EVM Content */}
-                <div className="bg-white rounded-lg shadow-inner">
+                <div className="bg-white rounded-lg shadow-inner overflow-hidden">
                   {/* Unified Ballot Section with Integrated Buttons */}
                   <div className="flex flex-col">
                     {/* Create 11 rows, with selected candidate at their ballot number position */}
