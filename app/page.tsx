@@ -131,6 +131,46 @@ export default function EVMApp() {
   const beepAudioRef = useRef<HTMLAudioElement | null>(null);
   const confettiAudioRef = useRef<HTMLAudioElement | null>(null);
 
+  // Initialize audio for mobile browsers
+  const initializeAudio = () => {
+    const audioElements = [splashAudioRef.current, beepAudioRef.current, confettiAudioRef.current];
+    audioElements.forEach(audio => {
+      if (audio) {
+        audio.load();
+        // Set volume to ensure it's audible
+        audio.volume = 1.0;
+        // Add mobile-specific attributes
+        audio.setAttribute('playsinline', 'true');
+        audio.setAttribute('webkit-playsinline', 'true');
+      }
+    });
+  };
+
+  // Enhanced audio play function for mobile compatibility
+  const playAudio = async (audioRef: React.RefObject<HTMLAudioElement | null>, audioName: string) => {
+    if (!audioRef.current) return;
+    
+    try {
+      audioRef.current.currentTime = 0;
+      await audioRef.current.play();
+    } catch (error) {
+      console.log(`${audioName} audio play failed:`, error);
+      // Try to play with muted first (mobile workaround)
+      try {
+        audioRef.current.muted = true;
+        await audioRef.current.play();
+        audioRef.current.muted = false;
+      } catch (mutedError) {
+        console.log(`${audioName} audio play failed even with muted workaround:`, mutedError);
+      }
+    }
+  };
+
+  // Initialize audio on component mount
+  useEffect(() => {
+    initializeAudio();
+  }, []);
+
   // Load candidates data from API
   useEffect(() => {
     const fetchCandidates = async () => {
@@ -178,15 +218,8 @@ export default function EVMApp() {
   // Function to handle dropdown item click with loader and audio
   const handleDropdownItemClick = async (candidate: Candidate) => {
     // Play splash audio
-    if (splashAudioRef.current) {
-      try {
-        splashAudioRef.current.currentTime = 0;
-        await splashAudioRef.current.play();
-        setIsPlaying(true);
-      } catch (err) {
-        console.log('Splash audio play failed:', err);
-      }
-    }
+    await playAudio(splashAudioRef, 'Splash');
+    setIsPlaying(true);
 
     // Show loader for 22 seconds
     setShowLoader(true);
@@ -237,18 +270,10 @@ export default function EVMApp() {
     }
 
     // Play beep sound first
-    if (beepAudioRef.current) {
-      beepAudioRef.current.currentTime = 0;
-      beepAudioRef.current.play().catch((err: Error) => console.log('Beep audio play failed:', err));
-    }
+    playAudio(beepAudioRef, 'Beep');
 
-    // Play confetti audio after beep (with slight delay)
-    setTimeout(() => {
-      if (confettiAudioRef.current) {
-        confettiAudioRef.current.currentTime = 0;
-        confettiAudioRef.current.play().catch((err: Error) => console.log('Confetti audio play failed:', err));
-      }
-    }, 500);
+    // Play confetti audio immediately (within user interaction context)
+    playAudio(confettiAudioRef, 'Confetti');
 
     // Fire confetti
     fireConfetti();
@@ -257,9 +282,9 @@ export default function EVMApp() {
   return (
     <div className="min-h-screen flex flex-col bg-[#e1b733]">
       {/* Audio elements */}
-      <audio ref={splashAudioRef} src="/audio/splash-audio.wav" preload="auto" />
-      <audio ref={beepAudioRef} src="/audio/beep-sound.wav" preload="auto" />
-      <audio ref={confettiAudioRef} src="/audio/confetti-2.wav" preload="auto" />
+      <audio ref={splashAudioRef} src="/audio/splash-audio.wav" preload="auto" playsInline />
+      <audio ref={beepAudioRef} src="/audio/beep-sound.wav" preload="auto" playsInline />
+      <audio ref={confettiAudioRef} src="/audio/confetti-2.wav" preload="auto" playsInline />
 
       {/* Header */}
       <header className="">
