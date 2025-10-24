@@ -46,7 +46,7 @@ function parseCSV(csvContent: string): Candidate[] {
         ballotNumber: parseInt(columns[4]) || 0,
         districtHindi: columns[6] || '',
         acNameHindi: columns[7] || '',
-        candidateNameHindi: columns[8] || ''
+        candidateNameHindi: columns[14] || ''
       });
     }
   }

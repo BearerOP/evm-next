@@ -125,6 +125,7 @@ export default function EVMApp() {
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [ledOn, setLedOn] = useState<boolean>(false);
   const [showLoader, setShowLoader] = useState<boolean>(false);
+  const [showSkeletonEVM, setShowSkeletonEVM] = useState<boolean>(false);
 
   const splashAudioRef = useRef<HTMLAudioElement | null>(null);
   const beepAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -185,8 +186,9 @@ export default function EVMApp() {
       }
     }
 
-    // Show loader for 5 seconds
+    // Show loader for 22 seconds
     setShowLoader(true);
+    setShowSkeletonEVM(false);
     
     // Set candidate data immediately but keep loader visible
     setSelectedAC(`${candidate.acNameHindi} (AC-${candidate.acNumber})`);
@@ -196,10 +198,16 @@ export default function EVMApp() {
     setSearchQuery('');
     setLedOn(false);
 
-    // Hide loader after 5 seconds
+    // Show skeleton EVM after 5 seconds
+    setTimeout(() => {
+      setShowSkeletonEVM(true);
+    }, 5000);
+
+    // Hide loader after 22 seconds
     setTimeout(() => {
       setShowLoader(false);
-    }, 5000);
+      setShowSkeletonEVM(false);
+    }, 22000);
   };
 
 
@@ -259,12 +267,6 @@ export default function EVMApp() {
             alt="Election Banner"
             className="w-full h-full object-contain"
           />
-          {/* <button
-            onClick={togglePlayPause}
-            className="absolute top-12 right-4 w-10 h-10 bg-white/50 rounded-full flex items-center justify-center shadow-lg hover:bg-white/70 transition"
-          >
-            <span className="text-xl">{isPlaying ? '⏸️' : '▶️'}</span>
-          </button> */}
         </div>
       </header>
 
@@ -334,18 +336,98 @@ export default function EVMApp() {
 
           {/* Loader */}
           {selectedAC && showLoader && (
-            <div className="rounded-3xl shadow-2xl relative bg-gray-200 p-8 border-y-8 border-r-8 border-amber-50">
-              <div className="text-center">
-                <img
-                  src="/basta.png"
-                  alt="Loading..."
-                  className="w-32 h-32 mx-auto animate-pulse"
-                  style={{
-                    animation: 'scaleUpDown 1s ease-in-out infinite'
-                  }}
-                />
-                <p className="text-gray-800 text-lg font-semibold mt-4">Loading EVM...</p>
-              </div>
+            // <div className="rounded-3xl shadow-2xl relative bg-gray-200 p-8 border-y-8 
+            // border-r-8 border-amber-50">
+            //               <div className="text-center">
+            //                 <img
+            //                   src="/basta.png"
+            //                   alt="Loading..."
+            //                   className="w-32 h-32 mx-auto animate-pulse"
+            //                   style={{
+            //                     animation: 'scaleUpDown 1s ease-in-out infinite'
+            //                   }}
+            //                 />
+            //                 <p className="text-gray-800 text-lg font-semibold mt-4">Loading EVM...</p>
+            //               </div>
+            <div className="rounded-3xl shadow-2xl relative">
+              {/* Initial Loading Screen */}
+              {!showSkeletonEVM && (
+                <div className="bg-gray-200 p-8 border-y-8 border-r-8 border-amber-50 rounded-3xl">
+                  <div className="text-center">
+                    <img
+                      src="/basta.png"
+                      alt="Loading..."
+                      className="w-32 h-32 mx-auto animate-pulse"
+                      style={{
+                        animation: 'scaleUpDown 1s ease-in-out infinite'
+                      }}
+                    />
+                    <p className="text-gray-800 text-lg font-semibold mt-4">EVM लोड हो रहा है...</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Skeleton EVM */}
+              {showSkeletonEVM && (
+                <div className="bg-gray-200 rounded-2xl p-4 shadow-inner border-y-8 border-r-8 border-amber-50 animate-pulse">
+                  {/* Top Blue Strip */}
+                  <div className="bg-blue-900 h-3 rounded-t-lg mb-2"></div>
+
+                  {/* Green LED */}
+                  <div className="flex justify-center mb-4">
+                    <div className="w-4 h-4 rounded-full bg-gray-400"></div>
+                  </div>
+
+                  {/* EVM Content */}
+                  <div className="bg-white rounded-lg shadow-inner">
+                    <div className="flex flex-col">
+                      {/* Create 11 skeleton rows */}
+                      {Array.from({ length: 11 }, (_, index) => {
+                        const rowNumber = index + 1;
+                        const isSelectedCandidate = rowNumber === selectedCandidate?.ballotNumber;
+                        
+                        return (
+                          <div key={rowNumber} className="flex border-b border-gray-300">
+                            {/* Left Side - Candidate Info Section */}
+                            <div className={`flex items-center px-3 py-3 flex-1 ${isSelectedCandidate ? 'bg-yellow-50' : 'bg-white'}`}>
+                              {/* Serial Number */}
+                              <div className="w-8 text-center shrink-0">
+                                <div className={`w-6 h-6 rounded bg-gray-300 ${isSelectedCandidate ? 'bg-yellow-200' : ''}`}></div>
+                              </div>
+
+                              {/* Candidate Information */}
+                              <div className="flex-1 px-2 min-w-0">
+                                {isSelectedCandidate ? (
+                                  <div className="h-4 bg-yellow-200 rounded w-32"></div>
+                                ) : (
+                                  <div className="h-4 bg-gray-300 rounded w-8"></div>
+                                )}
+                              </div>
+
+                              {/* Symbol Column */}
+                              <div className="w-16 flex items-center justify-center gap-1.5 shrink-0">
+                                {isSelectedCandidate ? (
+                                  <div className="w-14 h-14 bg-yellow-200 rounded"></div>
+                                ) : (
+                                  <div className="w-7 h-7 bg-gray-300 rounded-full"></div>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Right Side - Control Button */}
+                            <div className={`w-22 md:w-28 flex items-center justify-center shrink-0 ${isSelectedCandidate ? 'bg-blue-200' : 'bg-gray-300'}`}>
+                              <div className="w-14 h-8 bg-gray-400 rounded-full"></div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Bottom Blue Strip */}
+                  <div className="bg-blue-900 h-3 rounded-b-lg mt-2"></div>
+                </div>
+              )}
             </div>
           )}
 
@@ -415,13 +497,6 @@ export default function EVMApp() {
                             <div className="w-16 flex items-center justify-center gap-1.5 shrink-0">
                               {isSelectedCandidate ? (
                                 <>
-                                  {/* Candidate Photo - Commented out for now */}
-                                  {/* <img
-                                    src={parties[0].candidatePhoto}
-                                    alt=""
-                                    className={`w-7 h-7 rounded object-cover ${isSelected ? 'ring-2 ring-blue-500' : 'ring-2 ring-yellow-400'
-                                      }`}
-                                  /> */}
                                   <img
                                     src={parties[0].icon}
                                     alt="Symbol"
