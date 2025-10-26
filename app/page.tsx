@@ -226,7 +226,7 @@ export default function EVMApp() {
     setShowSkeletonEVM(false);
     
     // Set candidate data immediately but keep loader visible
-    setSelectedAC(`${candidate.acNameHindi} (AC-${candidate.acNumber})`);
+    setSelectedAC(candidate.acNameHindi);
     setSelectedCandidate(candidate);
     setShowACDropdown(false);
     setSelectedParty(null);
