@@ -149,7 +149,7 @@ export default function EVMApp() {
   // Enhanced audio play function for mobile compatibility
   const playAudio = async (audioRef: React.RefObject<HTMLAudioElement | null>, audioName: string) => {
     if (!audioRef.current) return;
-    
+
     try {
       audioRef.current.currentTime = 0;
       await audioRef.current.play();
@@ -203,11 +203,11 @@ export default function EVMApp() {
       const filtered = candidates.filter(candidate => {
         const searchLower = searchQuery.toLowerCase();
         return candidate.acName.toLowerCase().includes(searchLower) ||
-               candidate.candidateName.toLowerCase().includes(searchLower) ||
-               candidate.district.toLowerCase().includes(searchLower) ||
-               candidate.acNameHindi.includes(searchQuery) ||
-               candidate.candidateNameHindi.includes(searchQuery) ||
-               candidate.districtHindi.includes(searchQuery);
+          candidate.candidateName.toLowerCase().includes(searchLower) ||
+          candidate.district.toLowerCase().includes(searchLower) ||
+          candidate.acNameHindi.includes(searchQuery) ||
+          candidate.candidateNameHindi.includes(searchQuery) ||
+          candidate.districtHindi.includes(searchQuery);
       });
       // Ensure filtered results maintain sorted order by Assembly number
       const sortedFiltered = filtered.sort((a, b) => a.acNumber - b.acNumber);
@@ -224,7 +224,7 @@ export default function EVMApp() {
     // Show loader for 22 seconds
     setShowLoader(true);
     setShowSkeletonEVM(false);
-    
+
     // Set candidate data immediately but keep loader visible
     setSelectedAC(candidate.acNameHindi);
     setSelectedCandidate(candidate);
@@ -280,7 +280,7 @@ export default function EVMApp() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FFCE1A]">
+    <div className="min-h-screen flex flex-col bg-amber-300">
       {/* Audio elements */}
       <audio ref={splashAudioRef} src="/audio/splash-audio.wav" preload="auto" playsInline />
       <audio ref={beepAudioRef} src="/audio/beep-sound.wav" preload="auto" playsInline />
@@ -311,7 +311,7 @@ export default function EVMApp() {
           {/* AC Dropdown Section */}
           <div className="bg-white p-4 rounded-xl shadow-md mb-5 relative">
             <label className="block text-sm font-semibold text-blue-900 mb-2">
-            अपनी विधान सभा चुने:
+              अपनी विधान सभा चुने:
             </label>
 
             {/* Search Bar */}
@@ -360,6 +360,8 @@ export default function EVMApp() {
               </div>
             )}
           </div>
+          </div>
+          <div className="max-w-2xl mx-auto p-1">
 
           {/* Loader */}
           {selectedAC && showLoader && (
@@ -412,7 +414,7 @@ export default function EVMApp() {
                       {Array.from({ length: 11 }, (_, index) => {
                         const rowNumber = index + 1;
                         const isSelectedCandidate = rowNumber === selectedCandidate?.ballotNumber;
-                        
+
                         return (
                           <div key={rowNumber} className="flex border-b border-gray-300">
                             {/* Left Side - Candidate Info Section */}
@@ -460,133 +462,129 @@ export default function EVMApp() {
 
           {/* EVM Machine */}
           {selectedAC && !showLoader && (
-            <div className="rounded-3xl shadow-2xl relative">
+            <div className="rounded-lg shadow-2xl relative overflow-hidden">
               {/* Promotional Text */}
               <div className="text-center mb-6">
-                <p className="text-red-800 font-bold text-lg px-8 py-4">
-                  {selectedCandidate?.electionPhase === '1st Phase' ? '6' : '11'} नवंबर को EVM क्रमांक {selectedCandidate?.ballotNumber || 3} पर स्कूल का बस्ता छाप पर बटन दबाकर जन सुराज को भारी मतों से विजयी बनाएं।
+                <p className="text-amber-900 font-bold text-lg px-4 py-4">
+                  {selectedCandidate?.electionPhase === 'पहला चरण' ? '6' : '11'} नवंबर को EVM क्रमांक {selectedCandidate?.ballotNumber || 3} पर स्कूल का बस्ता छाप पर बटन दबाकर जन सुराज को भारी मतों से विजयी बनाएं।
                 </p>
               </div>
 
               {/* EVM Machine Body */}
-              <div className="bg-gray-200 rounded-2xl p-4 shadow-inner  border-y-8 border-r-8 border-amber-50">
-                {/* Top Blue Strip */}
-                <div className="bg-blue-900 h-3 rounded-t-lg mb-2"></div>
-
-                {/* Green LED */}
-                <div className="flex justify-center mb-4">
-                  <div className={`w-4 h-4 rounded-full shadow-lg transition-all duration-300 ${ledOn
-                      ? 'bg-green-400 shadow-green-400/50 shadow-lg animate-pulse'
-                      : 'bg-green-600'
-                    }`}></div>
+              <div className=" rounded-xl shadow-inner border-4 border-[#2D3748] overflow-hidden">
+                {/* Top Orange Strip */}
+                <div className="bg-amber-600 m-2 rounded-xl">
+                  <h2 className="text-center text-black text-base font-bold p-4"> इलेक्ट्रॉनिक वोटिंग मशीन (EVM)  </h2>
                 </div>
 
-                {/* EVM Content */}
-                <div className="bg-white rounded-lg shadow-inner overflow-hidden">
-                  {/* Unified Ballot Section with Integrated Buttons */}
-                  <div className="flex flex-col">
-                    {/* Create 11 rows, with selected candidate at their ballot number position */}
-                    {Array.from({ length: 11 }, (_, index) => {
+                {/* Pink EVM Content Area */}
+                <div className="bg-amber-100 p-1 md:p-3">
+                  {/* Table Header */}
+                  <div className="bg-amber-200 border-2 border-amber-500 rounded-t-lg overflow-hidden">
+                    <div className="grid grid-cols-[45px_1fr_70px_70px_85px] md:grid-cols-[55px_1fr_70px_85px_110px] gap-0 text-center py-1.5 md:py-2">
+                      <div className="text-[10px] md:text-xs font-bold text-gray-800 px-1 flex items-center justify-center">क्रमांक</div>
+                      <div className="text-[10px] md:text-xs font-bold text-gray-800 px-1 flex items-center justify-center">नाम</div>
+                      <div className="text-[10px] md:text-xs font-bold text-gray-800 px-1 flex items-center justify-center leading-tight">फोटो</div>
+                      <div className="text-[10px] md:text-xs font-bold text-gray-800 px-1 flex items-center justify-center">चिन्ह</div>
+                      <div className="text-[10px] md:text-xs font-bold text-gray-800 px-1 flex items-center justify-center">बटन</div>
+                    </div>
+                  </div>
+
+                  {/* Table Rows */}
+                  <div className="bg-amber-100 border-2 border-t-0 border-amber-500 rounded-b-lg overflow-hidden">
+                    {Array.from({ length: 10 }, (_, index) => {
                       const rowNumber = index + 1;
                       const isSelectedCandidate = rowNumber === selectedCandidate?.ballotNumber && selectedCandidate;
                       const isSelected = selectedParty?.id === 1 && isSelectedCandidate;
 
                       return (
-                        <div key={rowNumber} className="flex border-b border-gray-300">
-                          {/* Left Side - Candidate Info Section */}
-                          <div className={`flex items-center px-3 py-3 flex-1 transition-all duration-200 ${isSelectedCandidate
-                            ? isSelected
-                              ? 'bg-blue-100 shadow-md'
-                              : 'bg-yellow-50'
-                            : 'bg-white'
-                            }`}>
-                            {/* Serial Number */}
-                            <div className="w-8 text-center shrink-0">
-                              <span className={`text-base font-bold ${isSelectedCandidate
-                                ? isSelected
-                                  ? 'text-blue-800'
-                                  : 'text-yellow-800'
-                                : 'text-black'
-                                }`}>{rowNumber}.</span>
-                            </div>
-
-                            {/* Candidate Information */}
-                            <div className="flex-1 px-2 min-w-0">
-                              {isSelectedCandidate ? (
-                                <span className={`text-base font-bold ${isSelected ? 'text-blue-800' : 'text-yellow-800'
-                                  }`}>{selectedCandidate?.candidateNameHindi}</span>
-                              ) : (
-                                <span className="text-base text-gray-400">-</span>
-                              )}
-                            </div>
-
-                            {/* Symbol/Photo Column */}
-                            <div className="w-16 flex items-center justify-center gap-1.5 shrink-0">
-                              {isSelectedCandidate ? (
-                                <>
-                                  <img
-                                    src={parties[0].icon}
-                                    alt="Symbol"
-                                    className={`w-14 h-14 ${isSelected ? 'drop-shadow-lg' : ''
-                                      }`}
-                                  />
-                                </>
-                              ) : (
-                                <div className="w-7 h-7 bg-gray-300 rounded-full flex items-center justify-center">
-                                  <div className="w-5 h-5 bg-gray-400 rounded-full"></div>
-                                </div>
-                              )}
-                            </div>
+                        <div key={rowNumber} className={`grid grid-cols-[45px_1fr_70px_70px_85px] md:grid-cols-[55px_1fr_85px_85px_110px] gap-0 border-b-2 border-amber-500 last:border-b-0 min-h-[65px] md:min-h-[75px] ${isSelected ? 'bg-amber-200' : ''}`}>
+                          {/* Serial Number */}
+                          <div className="flex items-center justify-center py-2">
+                            <span className="text-sm md:text-base font-bold text-gray-800">{rowNumber}</span>
                           </div>
 
-                          {/* Right Side - Control Button (Fixed Width) */}
-
-                          <button
-                            onClick={() => isSelectedCandidate && handlePartySelect(parties[0])}
-                            disabled={hasVoted || !isSelectedCandidate}
-                            className={`w-22 md:w-28 flex items-center justify-center transition-all duration-200 ease-in-out shrink-0 ${isSelected
-                              ? 'bg-blue-300 scale-95 shadow-inner'
-                              : isSelectedCandidate
-                                ? 'bg-blue-700 hover:bg-blue-600 active:scale-95'
-                                : 'bg-gray-400 cursor-not-allowed'
-                              } ${hasVoted ? 'opacity-50' : ''}`}
-                          >
-
-                            <ArrowLeftIcon className={`w-7 stroke-3 h-7 mr-1 md:mr-2  ${isSelected ? 'text-blue-800' : 'text-white'}`} />
-
-                            <div className={`w-14 h-8 rounded-full flex items-center justify-center shadow-md transition-all duration-200 ${isSelected
-                              ? 'bg-blue-800 scale-95'
-                              : isSelectedCandidate
-                                ? 'bg-blue-800'
-                                : 'bg-gray-500'
-                              }`}>
-                              <div className={`w-10 h-5 rounded-full flex items-center justify-center ${isSelected
-                                ? 'bg-blue-600 scale-95'
-                                : isSelectedCandidate
-                                  ? 'bg-blue-600'
-                                  : 'bg-gray-400'
-                                }`}>
-                                <div className={`w-6 h-3 rounded-full ${isSelected
-                                  ? 'bg-blue-500 scale-95'
-                                  : isSelectedCandidate
-                                    ? 'bg-blue-500'
-                                    : 'bg-gray-300'
-                                  }`}></div>
+                          {/* Candidate Name */}
+                          <div className="flex items-center px-1.5 md:px-2 py-2">
+                            {isSelectedCandidate ? (
+                              <div className="text-left w-full">
+                                <div className="text-xs md:text-sm font-bold text-gray-900 leading-tight mb-0.5">{selectedCandidate?.candidateNameHindi}</div>
+                                <div className="text-[10px] md:text-xs text-gray-700 italic leading-tight">{selectedCandidate?.candidateName}</div>
+                                <div className="text-[10px] md:text-xs text-gray-600 leading-tight">Jan Suraaj</div>
                               </div>
-                            </div>
-                          </button>
+                            ) : (
+                              <span className="text-sm text-gray-400"></span>
+                            )}
+                          </div>
+
+                          {/* Candidate Photo */}
+                          <div className="flex items-center justify-center py-2 px-1">
+                            {isSelectedCandidate ? (
+                              <div className="w-8 h-8 md:w-14 md:h-14 bg-white rounded border-2 border-gray-400 overflow-hidden shrink-0">
+                                <img
+                                  src={parties[0].candidatePhoto}
+                                  alt="Candidate"
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="56" height="56"%3E%3Crect fill="%23e5e7eb" width="56" height="56"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-size="20" fill="%239ca3af"%3E👤%3C/text%3E%3C/svg%3E';
+                                  }}
+                                />
+                              </div>
+                            ) : (
+                              <div className="w-9 h-9 md:w-10 md:h-10 bg-gray-300 rounded-full flex items-center justify-center shrink-0">
+                                <div className="w-6 h-6 md:w-7 md:h-7 bg-gray-400 rounded-full"></div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Party Symbol */}
+                          <div className="flex items-center justify-center py-2 px-1">
+                            {isSelectedCandidate ? (
+                              <div className="w-12 h-12 md:w-14 md:h-14 bg-white rounded-full border-2 border-gray-400 overflow-hidden flex items-center justify-center shrink-0">
+                                <img
+                                  src={parties[0].icon}
+                                  alt="Symbol"
+                                  className="w-10 h-10 md:w-12 md:h-12 object-contain"
+                                />
+                              </div>
+                            ) : (
+                              <div className="w-9 h-9 md:w-10 md:h-10 bg-gray-300 rounded-full flex items-center justify-center shrink-0">
+                                <div className="w-6 h-6 md:w-7 md:h-7 bg-gray-400 rounded-full"></div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Vote Button */}
+                          <div className="flex items-center justify-center gap-2 py-2 px-1">
+                            {/* LED indicator */}
+                            <div
+                              className={`w-3 h-3 md:w-3.5 md:h-3.5 rounded-full ${isSelected ? 'bg-green-500 shadow-[0_0_0_4px_rgba(34,197,94,0.35)]' : 'bg-gray-400'
+                                }`}
+                            />
+                            <button
+                              onClick={() => isSelectedCandidate && handlePartySelect(parties[0])}
+                              disabled={hasVoted || !isSelectedCandidate}
+                              className={`w-full max-w-[75px] md:max-w-[95px] h-9 md:h-10 rounded-lg font-bold text-[10px] md:text-xs transition-all duration-200 leading-tight ${isSelected
+                                  ? 'bg-amber-700 text-white shadow-inner'
+                                  : isSelectedCandidate
+                                    ? 'bg-amber-500 text-white hover:bg-amber-600 active:scale-95'
+                                    : 'bg-amber-300 text-gray-600 cursor-not-allowed'
+                                }`}
+                            >
+                              {isSelectedCandidate ? 'बटन दबाएं' : ''}
+                            </button>
+                          </div>
                         </div>
                       );
                     })}
                   </div>
                 </div>
 
-                {/* Bottom Blue Strip */}
-                <div className="bg-blue-900 h-3 rounded-b-lg mt-2"></div>
+                {/* Bottom Orange Strip */}
+                <div className="bg-[#FF8C42] h-3 md:h-4"></div>
               </div>
             </div>
           )}
-
           {/* No AC Selected */}
           {!selectedAC && (
             <div className="text-center py-16">
