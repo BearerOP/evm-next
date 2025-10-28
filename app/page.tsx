@@ -464,7 +464,7 @@ export default function EVMApp() {
               {/* Promotional Text */}
               <div className="text-center mb-6">
                 <p className="text-red-800 font-bold text-lg px-8 py-4">
-                  {selectedCandidate?.electionPhase === '1st Phase' ? '6' : '11'} नवंबर को EVM क्रमांक {selectedCandidate?.ballotNumber || 3} पर स्कूल का बस्ता छाप पर बटन दबाकर जन सुराज को भारी मतों से विजयी बनाएं।
+                  {selectedCandidate?.electionPhase === 'पहला चरण' ? '6' : '11'} नवंबर को EVM क्रमांक {selectedCandidate?.ballotNumber || 3} पर स्कूल का बस्ता छाप पर बटन दबाकर जन सुराज को भारी मतों से विजयी बनाएं।
                 </p>
               </div>
 
