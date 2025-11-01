@@ -485,8 +485,8 @@ export default function EVMApp() {
                 <div className="bg-white rounded-lg shadow-inner overflow-hidden">
                   {/* Unified Ballot Section with Integrated Buttons */}
                   <div className="flex flex-col">
-                    {/* Create 11 rows, with selected candidate at their ballot number position */}
-                    {Array.from({ length: 11 }, (_, index) => {
+                    {/* Create dynamic rows based on ballot number, minimum 10, maximum 15 */}
+                    {Array.from({ length: Math.min(15, Math.max(10, selectedCandidate?.ballotNumber || 10)) }, (_, index) => {
                       const rowNumber = index + 1;
                       const isSelectedCandidate = rowNumber === selectedCandidate?.ballotNumber && selectedCandidate;
                       const isSelected = selectedParty?.id === 1 && isSelectedCandidate;
