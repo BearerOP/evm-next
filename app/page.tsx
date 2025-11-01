@@ -408,8 +408,8 @@ export default function EVMApp() {
                   {/* EVM Content */}
                   <div className="bg-white rounded-lg shadow-inner overflow-hidden">
                     <div className="flex flex-col">
-                      {/* Create 11 skeleton rows */}
-                      {Array.from({ length: 11 }, (_, index) => {
+                      {/* Create 15 skeleton rows */}
+                      {Array.from({ length: 15 }, (_, index) => {
                         const rowNumber = index + 1;
                         const isSelectedCandidate = rowNumber === selectedCandidate?.ballotNumber;
                         
